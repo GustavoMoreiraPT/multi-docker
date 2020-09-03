@@ -1,0 +1,21 @@
+sudo: required
+services:
+    - docker
+
+before_install:
+    - docker build -t gustavomoreirapt/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+    - docker run -e CI=true gustavomoreirapt/react-test npm test
+
+after_success:
+    - docker build -t gustavomoreirapt/multi-client ./client
+    - docker build -t gustavomoreirapt/multi-nginx ./nginx
+    - docker build -t gustavomoreirapt/multi-server ./server
+    - docker build -t gustavomoreirapt/multi-worker ./worker
+    # take these images and push them to dockerhub
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    - docker push gustavomoreirapt/multi-client
+    - docker push gustavomoreirapt/multi-nginx
+    - docker push gustavomoreirapt/multi-server
+    - docker push gustavomoreirapt/multi-worker
