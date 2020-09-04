@@ -1,4 +1,3 @@
-sudo: required
 services:
     - docker
 
@@ -19,3 +18,16 @@ after_success:
     - docker push gustavomoreirapt/multi-nginx
     - docker push gustavomoreirapt/multi-server
     - docker push gustavomoreirapt/multi-worker
+
+deploy:
+    edge: true
+    provider: elasticbeanstalk
+    region: us-east-2
+    app: multi-docker
+    env: MultiDocker-env
+    bucket_name: elasticbeanstalk-us-east-2-203077743153
+    bucket_path: docker-multi
+    on:
+        branch: master
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_SECRET_KEY
